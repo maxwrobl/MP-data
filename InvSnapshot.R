@@ -24,7 +24,7 @@ ui <- fluidPage(
 
   
   sidebarLayout(
-    sidebarPanel(
+      sidebarPanel(
       
       dateRangeInput(inputId = "snapshotDate",label = "Date Range",
                      start = as.Date('2020-01-01'), end = as.Date('2020-12-31')),
@@ -32,14 +32,14 @@ ui <- fluidPage(
       selectInput(inputId = "dieLocation",label = "Die Location",
                   choices = sort(unique(stream$dieLocation)),selected = "M-085")
       
-    ),
+                  ),
     
-    mainPanel(
+      mainPanel(
       
       streamgraphOutput(outputId = "streamPlot")
-    )
-  )
-)
+               )
+                   )
+                )
 
 #Connecting UI Inputs to streamPlot Outputs
 server <- function(input,output){
@@ -57,8 +57,8 @@ server <- function(input,output){
                 offset="zero", height="800px", width="1000px",
                 left=70) 
     
-  })
+                                          })
   
-}
+                                  }
 
 shinyApp(ui=ui,server=server)
