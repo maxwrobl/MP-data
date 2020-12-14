@@ -1,22 +1,22 @@
-library(dplyr)
-library(shiny) 
-library(streamgraph)
-library(htmlwidgets)
+library("dplyr")
+library("shiny") 
+library("streamgraph")
+library("htmlwidgets")
 
 stream<-read.csv("snapshot.csv")
 
-#Cleaning Date Format
+##Cleaning Date Format
 stream$snapshotDate <- as.factor(stream$snapshotDate)
 abis<-strptime(stream$snapshotDate,format = "%m/%d/%Y")
 stream$snapshotDate<-as.Date(abis,format = "%Y-%m-%d")
 
-#Cleaning Data
+##Cleaning Data
 stream$dieLocation<-trimws(stream$dieLocation)
 stream$itemNumber<-trimws(stream$itemNumber)
 stream$quantityOnHand <- gsub(",","",stream$quantityOnHand)
 stream$quantityOnHand <- as.numeric(stream$quantityOnHand)
 
-#Formatting User Interface
+##Formatting User Interface
 ui <- fluidPage(
   h2("Inventory History by Item", style="text-align:left"),
   br(),
