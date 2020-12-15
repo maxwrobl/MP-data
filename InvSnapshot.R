@@ -47,24 +47,21 @@ server <- function(input,output){
 
   output$streamPlot <- renderStreamgraph({
     
-    filtered <-
+    filter_1<-
       stream %>%
       filter(dieLocation==input$dieLocation,
              snapshotDate>=input$snapshotDate[1],
-             snapshotDate<=input$snapshotDate[2]
-      ) %>%
+             snapshotDate<=input$snapshotDate[2]) %>%
       select(itemNumber,snapshotDate,quantityOnHand) %>%
       arrange(desc(snapshotDate),desc(quantityOnHand))
     
-    latest=filtered[1,2]
+    validate(need(nrow(filter_1)!=0, "Adjust Date Range"))
     
-    validate(need(nrow(filtered)!=0, "Adjust Date Range"))
-    
-    qual<-filtered[!duplicated(filtered$itemNumber),]
+    qual<-filter_1[!duplicated(filter_1$itemNumber),]
     qual<-qual %>% arrange(desc(snapshotDate))
     qual$seq<-1:length(qual$itemNumber)
     
-    merge<-merge(filtered,qual[,c(1,4)],by="itemNumber")
+    merge<-merge(filter_1,qual[,c(1,4)],by="itemNumber")
     merge$code<-paste0(merge$seq,".",merge$itemNumber)
     merge$code<-formatC(merge$code,digits=ncar(merge$itemNumber),format='f')
     
@@ -74,14 +71,19 @@ server <- function(input,output){
       sg_axis_x(tick_format = "%b-%y")
   })
   
-    output$CurrentInv <- renderText({
-      current<-stream %>%
-        filter(dieLocation==input$dieLocation,
-               snapshotDate==latest
-               )
+  output$CurrentInv <- renderText({
+      
+    filter_2 <-
+        stream %>%
+        filter(dieLocation==input$dieLocation) %>%
+        select(itemNumber,snapshotDate,quantityOnHand) %>%
+        arrange(desc(snapshotDate),desc(quantityOnHand))
     
-      paste0("Current Units On-Hand for ",input$dieLocation,": ",as.numeric(sum(current$quantityOnHand)))
-  })
+    CurrentInv <- filter_2 %>% filter(snapshotDate==filter_2[1,2])
+    
+    paste0("Current Units On-Hand for ",input$dieLocation,": ",as.numeric(sum(CurrentInv$quantityOnHand)))
+  
+    })
   
 }
 
